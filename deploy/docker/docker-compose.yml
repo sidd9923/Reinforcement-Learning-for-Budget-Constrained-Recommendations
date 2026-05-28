@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  sensqml:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: sensqml:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - SENSQML_RUN_DIR=/app/runs/latest
+      - SENSQML_THRESHOLD=0.5
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../../runs:/app/runs:ro       # mount trained artefacts read-only
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
